@@ -40,6 +40,22 @@ Task:
 - In the table above, the **Products column** contains multiple values, which violates **1NF**.
 - **Write an SQL query** to transform this table into **1NF**, ensuring that each row represents a single product for an order
 
+
+
+SELECT 
+    OrderID,
+    CustomerName,
+    TRIM(product) AS Product
+FROM 
+    ProductDetail,
+    JSON_TABLE(
+        CONCAT('["', REPLACE(Products, ', ', '","'), '"]'),
+        "$[*]" COLUMNS(product VARCHAR(100) PATH "$")
+    ) AS jt;
+
+
+
+
 --- 
 
 ### Question 2 Achieving 2NF (Second Normal Form) 🧩
@@ -58,6 +74,23 @@ Task:
 - In the table above, the **CustomerName** column depends on **OrderID** (a partial dependency), which violates **2NF**. 
 
 - Write an SQL query to transform this table into **2NF** by removing partial dependencies. Ensure that each non-key column fully depends on the entire primary key.
+
+-- Table for Orders with Customer info
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerName VARCHAR(100)
+);
+
+-- Table for Order details
+CREATE TABLE OrderDetails (
+    OrderID INT,
+    Product VARCHAR(100),
+    Quantity INT,
+    PRIMARY KEY (OrderID, Product)
+);
+
+
+
 
 ---
 Good luck 🚀
